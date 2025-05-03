@@ -1,0 +1,83 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - KEYCLOAK_REALM_ADMIN=${KEYCLOAK_REALM_ADMIN}
+      - KEYCLOAK_REALM_ADMIN_PASSWORD=${KEYCLOAK_REALM_ADMIN_PASSWORD}
+      - KEYCLOAK_REALM_CLIENT_ID=${KEYCLOAK_REALM_CLIENT_ID}
+      - KEYCLOAK_REALM_CLIENT_SECRET=${KEYCLOAK_REALM_CLIENT_SECRET}
+      - KEYCLOAK_SERVER_URL=${KEYCLOAK_SERVER_URL}
+      - APP_DB=${APP_DB}
+      - APP_DB_HOSTNAME=appdb
+      - APP_DB_PASSWORD=${APP_DB_PASSWORD}
+      - APP_DB_PORT=${APP_DB_PORT}
+      - APP_DB_USERNAME=${APP_DB_USERNAME}
+      - PORT=${PORT}
+    depends_on:
+      keycloak:
+        condition: service_started
+      appdb:
+        condition: service_healthy
+
+  appdb:
+      image: "postgres:15"
+      ports:
+        - ${APP_DB_PORT}:${APP_DB_PORT}
+      environment:
+        - POSTGRES_USER=${APP_DB_USERNAME:-appuser}
+        - POSTGRES_PASSWORD=${APP_DB_PASSWORD:-apppass}
+        - POSTGRES_DB=${APP_DB:-appdb}
+      volumes:
+        - app_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U ${APP_DB_USERNAME:-appuser}"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+
+  keycloak:
+    image: "keycloak/keycloak:26.2"
+    command: ["start-dev"]
+    ports:
+      - 8081:8080
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://keycloakdb:5432/postgres
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=postgres
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+    depends_on:
+      keycloakdb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+
+  keycloakdb:
+    image: "postgres:15"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  keycloak_data:
+  app_data:
