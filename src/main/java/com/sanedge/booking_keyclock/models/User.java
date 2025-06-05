@@ -5,35 +5,47 @@ import org.keycloak.representations.idm.UserRepresentation;
 
 public class User {
     private final String id;
+    private final String firstName;
+    private final String lastName;
     private final String email;
     private final String username;
     private final Optional<String> verificationCode;
-    private final boolean verified;
 
     public User(
             String id,
+            String firstName,
+            String lastName,
             String email,
             String username,
-            Optional<String> verificationCode,
-            boolean verified) {
+            Optional<String> verificationCode) {
         this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.verificationCode = verificationCode;
-        this.verified = verified;
     }
 
     public User(UserRepresentation userRepresentation) {
         this(
                 userRepresentation.getId(),
+                userRepresentation.getFirstName(),
+                userRepresentation.getLastName(),
                 userRepresentation.getEmail(),
                 userRepresentation.getUsername(),
-                Optional.ofNullable(userRepresentation.firstAttribute("verification_code")),
-                Boolean.parseBoolean(userRepresentation.firstAttribute("verified")));
+                Optional.ofNullable(userRepresentation.firstAttribute("verification_code")));
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public String getEmail() {
@@ -46,9 +58,5 @@ public class User {
 
     public Optional<String> getVerificationCode() {
         return verificationCode;
-    }
-
-    public boolean isVerified() {
-        return verified;
     }
 }

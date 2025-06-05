@@ -36,10 +36,8 @@ public class BookingMailServiceImpl implements BookingMailService {
             context.setVariable("orderId", orderId);
             context.setVariable("formattedDate", formattedDate);
 
-            // Process the Thymeleaf template
-            String content = templateEngine.process("checkin", context);
+            String content = templateEngine.process("mail/checkin", context);
 
-            // Create and configure the email message
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(email);
@@ -64,7 +62,7 @@ public class BookingMailServiceImpl implements BookingMailService {
             context.setVariable("orderId", orderId);
             context.setVariable("formattedDate", formattedDate);
 
-            String content = templateEngine.process("checkout", context);
+            String content = templateEngine.process("mail/checkout", context);
 
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -88,7 +86,7 @@ public class BookingMailServiceImpl implements BookingMailService {
             context.setVariable("formattedDate",
                     localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-            String content = templateEngine.process("checkin_remainder", context);
+            String content = templateEngine.process("mail/checkin_remainder", context);
 
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

@@ -21,6 +21,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     @Override
     public ResetToken createResetToken(User user) {
         ResetToken resetToken = new ResetToken();
+        resetToken.setUserId(user.getId());
         resetToken.setToken(UUID.randomUUID().toString());
         resetToken.setExpiryDate(Instant.now().plus(24, ChronoUnit.HOURS)); 
         return resetTokenRepository.save(resetToken);

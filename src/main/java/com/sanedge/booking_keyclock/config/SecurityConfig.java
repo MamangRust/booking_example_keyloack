@@ -17,62 +17,63 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String[] PUBLIC_ENDPOINTS = {
-            "/api/test",
-            "/static/**",
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/reset",
-            "/api/auth/forgot",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/api-docs/**"
-    };
+        private static final String[] PUBLIC_ENDPOINTS = {
+                        "/api/test",
+                        "/static/**",
+                        "/api/auth/login",
+                        "/api/auth/register",
+                        "/api/auth/reset",
+                        "/api/auth/verify",
+                        "/api/auth/forgot",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/api-docs/**"
+        };
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrfCustomizer -> csrfCustomizer.disable())
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated());
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http.csrf(csrfCustomizer -> csrfCustomizer.disable())
+                                .authorizeHttpRequests(requests -> requests
+                                                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                                .anyRequest().authenticated());
 
-        http.sessionManagement(
-                sessionManagementCustomizer -> sessionManagementCustomizer.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS));
+                http.sessionManagement(
+                                sessionManagementCustomizer -> sessionManagementCustomizer.sessionCreationPolicy(
+                                                SessionCreationPolicy.STATELESS));
 
-        http.oauth2ResourceServer(
-                oauth2ResourceServerCustomizer -> oauth2ResourceServerCustomizer
-                        .bearerTokenResolver(
-                                httpServletRequest -> {
-                                    var header = httpServletRequest.getHeader(
-                                            HttpHeaders.AUTHORIZATION);
+                http.oauth2ResourceServer(
+                                oauth2ResourceServerCustomizer -> oauth2ResourceServerCustomizer
+                                                .bearerTokenResolver(
+                                                                httpServletRequest -> {
+                                                                        var header = httpServletRequest.getHeader(
+                                                                                        HttpHeaders.AUTHORIZATION);
 
-                                    if (header == null || header.isBlank()) {
-                                        return header;
-                                    }
+                                                                        if (header == null || header.isBlank()) {
+                                                                                return header;
+                                                                        }
 
-                                    var token = header.split("Bearer ")[1].trim();
+                                                                        var token = header.split("Bearer ")[1].trim();
 
-                                    return token;
-                                })
-                        .jwt(Customizer.withDefaults()));
+                                                                        return token;
+                                                                })
+                                                .jwt(Customizer.withDefaults()));
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        var configuration = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfiguration() {
+                var configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+                configuration.setAllowedOriginPatterns(List.of("*"));
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
 
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+                var source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+                return source;
+        }
 
 }

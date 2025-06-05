@@ -31,13 +31,13 @@ public class CheckController {
     }
 
     @GetMapping("/check-order/{orderId}")
-    public ResponseEntity<MessageResponse> checkOrder(@PathVariable String orderId) {
+    public ResponseEntity<MessageResponse> checkOrder(@PathVariable("orderId") String orderId) {
         MessageResponse response = checkService.checkOrder(orderId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/check-out/{orderId}")
-    public ResponseEntity<MessageResponse> checkOut(@PathVariable String orderId) {
+    public ResponseEntity<MessageResponse> checkOut(@PathVariable("orderId") String orderId) {
         MessageResponse response = checkService.checkOutOrder(orderId);
         return ResponseEntity.ok(response);
     }

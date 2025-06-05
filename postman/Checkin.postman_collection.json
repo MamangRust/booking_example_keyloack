@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "9530fd33-2bb8-4f00-a96e-4bfde0479c0a",
+		"name": "Checkin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12455638"
+	},
+	"item": [
+		{
+			"name": "Checkin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\": \"ORDER1749148812439\",\n    \"checkInTime\": \"2025-06-05T09:00:00\",\n    \"email\": \"real@world.com\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/check/check-in",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"check",
+						"check-in"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/check/check-in \\\n  -H \"Authorization: Bearer <your_access_token>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"orderId\": \"ORD123456\",\n    \"checkInTime\": \"2025-06-05T09:00:00\",\n    \"email\": \"user@example.com\"\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Check Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/check/check-order/ORDER1749148812439",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"check",
+						"check-order",
+						"ORDER1749148812439"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:8080/api/check/check-order/ORD123456 \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		},
+		{
+			"name": "Checkout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/check/check-out/ORDER1749148812439",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"check",
+						"check-out",
+						"ORDER1749148812439"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/check/check-out/ORD123456 \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		}
+	]
+}

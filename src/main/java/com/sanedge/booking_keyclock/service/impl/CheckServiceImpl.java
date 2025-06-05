@@ -2,16 +2,18 @@ package com.sanedge.booking_keyclock.service.impl;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sanedge.booking_keyclock.config.KeycloakConfig;
 import com.sanedge.booking_keyclock.domain.request.booking.CheckInRequest;
 import com.sanedge.booking_keyclock.domain.response.MessageResponse;
 import com.sanedge.booking_keyclock.domain.response.booking.BookingDetailsResponse;
@@ -20,6 +22,7 @@ import com.sanedge.booking_keyclock.enums.RoomStatus;
 import com.sanedge.booking_keyclock.exception.ResourceNotFoundException;
 import com.sanedge.booking_keyclock.models.Booking;
 import com.sanedge.booking_keyclock.models.Room;
+import com.sanedge.booking_keyclock.models.User;
 import com.sanedge.booking_keyclock.repository.BookingRepository;
 import com.sanedge.booking_keyclock.repository.RoomRepository;
 import com.sanedge.booking_keyclock.service.BookingMailService;
@@ -31,23 +34,21 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 public class CheckServiceImpl implements CheckService {
-    @Value("${keycloak.realm}")
-    private String keycloakRealm;
-
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
     private final BookingMailService bookingMailService;
-    private final Keycloak keycloak;
+
+    private final KeycloakConfig keycloakConfig;
 
     @Autowired
     public CheckServiceImpl(BookingRepository bookingRepository,
             RoomRepository roomRepository,
             BookingMailService bookingMailService,
-            Keycloak keycloak) {
+            KeycloakConfig keycloakConfig) {
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
         this.bookingMailService = bookingMailService;
-        this.keycloak = keycloak;
+        this.keycloakConfig = keycloakConfig;
     }
 
     @Override
@@ -58,7 +59,11 @@ public class CheckServiceImpl implements CheckService {
             Booking booking = bookingRepository.findByOrderId(request.getOrderId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-            UserRepresentation user = getUserFromKeycloak(booking.getUserId());
+            Optional<User> user = getUserByEmail(request.getEmail());
+
+            if (user.isEmpty()) {
+                throw new ResourceNotFoundException("User not found");
+            }
 
             booking.setCheckInTime(request.getCheckInTime());
             booking.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
@@ -66,7 +71,7 @@ public class CheckServiceImpl implements CheckService {
 
             bookingMailService.sendEmailCheckIn(
                     booking.getOrderId(),
-                    user.getEmail(),
+                    user.get().getEmail(),
                     booking.getCheckInTime().toString());
 
             log.info("Order checked in successfully: {}", booking.getOrderId());
@@ -94,8 +99,9 @@ public class CheckServiceImpl implements CheckService {
         BookingDetailsResponse bookingDetails = bookingRepository.findBookingDetailsByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        UserRepresentation user = keycloak.realm(this.keycloakRealm)
-                .users()
+        RealmResource realmResource = keycloakConfig.getRealmResource();
+
+        UserRepresentation user = realmResource.users()
                 .get(bookingDetails.getUserId())
                 .toRepresentation();
 
@@ -112,8 +118,13 @@ public class CheckServiceImpl implements CheckService {
             BookingDetailsResponse bookingDetails = bookingRepository.findBookingDetailsByOrderId(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-            UserRepresentation user = getUserEmailFromKeycloak(bookingDetails.getUserId());
-            bookingDetails.setUserId(user.getId());
+            Optional<User> user = getUserById(bookingDetails.getUserId());
+
+            if (user.isEmpty()) {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+            bookingDetails.setUserId(user.get().getId());
 
             log.info("Found order details: {}", orderId);
             return MessageResponse.builder()
@@ -155,7 +166,11 @@ public class CheckServiceImpl implements CheckService {
             Room room = roomRepository.findById(booking.getRoom().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
-            UserRepresentation user = getUserFromKeycloak(booking.getUserId());
+            Optional<User> user = getUserById(booking.getUserId());
+
+            if (user.isEmpty()) {
+                log.warn("User not found  User ID: {}", booking.getUserId());
+            }
 
             LocalDateTime checkOutTime = LocalDateTime.now();
             booking.setCheckOutTime(checkOutTime);
@@ -168,16 +183,15 @@ public class CheckServiceImpl implements CheckService {
 
             bookingMailService.sendEmailCheckOut(
                     booking.getOrderId(),
-                    user.getEmail(),
+                    user.get().getEmail(),
                     checkOutTime.toString());
 
             CheckOutResponse response = new CheckOutResponse(
                     booking.getOrderId(),
                     booking.getRoom().getId(),
-                    booking.getCheckInTime(), 
+                    booking.getCheckInTime(),
                     checkOutTime,
-                    user.getEmail()
-            );
+                    user.get().getEmail());
 
             log.info("Check-out processed successfully: {}", orderId);
             return MessageResponse.builder()
@@ -201,33 +215,36 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    private UserRepresentation getUserFromKeycloak(String userId) {
+    public Optional<User> getUserById(String userId) {
         try {
-            UserResource userResource = keycloak.realm(this.keycloakRealm).users().get(userId);
-            UserRepresentation user = userResource.toRepresentation();
+            RealmResource realmResource = keycloakConfig.getRealmResource();
+            UsersResource usersResource = realmResource.users();
+            UserResource userResource = usersResource.get(userId);
 
-            if (user == null || !user.isEnabled()) {
-                throw new ResourceNotFoundException("User not found or account disabled");
+            try {
+                UserRepresentation userRepresentation = userResource.toRepresentation();
+                return Optional.of(new User(userRepresentation));
+            } catch (RuntimeException e) {
+                log.warn("User with ID {} not found in Keycloak", userId);
+                return Optional.empty();
             }
-            return user;
         } catch (Exception e) {
-            log.error("Error fetching user from Keycloak: {}", e.getMessage());
-            throw new ResourceNotFoundException("Failed to retrieve user information");
+            log.error("Error while fetching user from Keycloak", e);
+            return Optional.empty();
         }
     }
 
-    private UserRepresentation getUserEmailFromKeycloak(String email) {
-        try {
-            UserResource userResource = keycloak.realm(this.keycloakRealm).users().get(email);
-            UserRepresentation user = userResource.toRepresentation();
+    public Optional<User> getUserByEmail(String email) {
+        RealmResource realmResource = keycloakConfig.getRealmResource();
+        UsersResource usersResource = realmResource.users();
 
-            if (user == null || !user.isEnabled()) {
-                throw new ResourceNotFoundException("User not found or account disabled");
-            }
-            return user;
-        } catch (Exception e) {
-            log.error("Error fetching user from Keycloak: {}", e.getMessage());
-            throw new ResourceNotFoundException("Failed to retrieve user information");
+        var usersByEmail = usersResource.searchByEmail(email, true);
+
+        if (usersByEmail.isEmpty()) {
+            return Optional.empty();
         }
+
+        var userRepresentation = usersByEmail.get(0);
+        return Optional.of(new User(userRepresentation));
     }
 }

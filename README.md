@@ -1,32 +1,45 @@
-# Getting Started
 
-### Reference Documentation
-For further reference, please consider the following sections:
+# 🏨 Booking Management System
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/maven-plugin/build-image.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.4.5/reference/data/sql.html#data.sql.jpa-and-spring-data)
-* [Spring Security](https://docs.spring.io/spring-boot/3.4.5/reference/web/spring-security.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.4.5/reference/web/servlet.html)
-* [OAuth2 Resource Server](https://docs.spring.io/spring-boot/3.4.5/reference/web/spring-security.html#web.security.oauth2.server)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.4.5/reference/using/devtools.html)
+A robust **Room Booking System** built with **Spring Boot**, secured via **Keycloak**, and deployed using **Docker & Docker Compose** with **PostgreSQL** as the database.
 
-### Guides
-The following guides illustrate how to use some features concretely:
+---
 
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+## 🚀 Features
 
-### Maven Parent overrides
+- 🔐 Authentication & Authorization using **Keycloak**
+- 🧑 User Registration, Login, Email Verification, Password Reset
+- 🏢 Room Management (CRUD)
+- 📅 Room Booking with Check-in and Check-out
+- 📦 Containerized with Docker and orchestrated using Docker Compose
+- 💾 PostgreSQL database with auto-migrations
+- 📄 REST API with JSON support
+- 🧪 Health checks for services
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+---
 
+## 📦 Tech Stack
+
+
+| 🧱 Layer              | 🚀 Technology               |
+|----------------------|-----------------------------|
+| 🖥️ Backend           | Spring Boot (Java)          |
+| 🔐 Auth              | Keycloak                    |
+| 🗄️ Database          | PostgreSQL                  |
+| 📦 Containerization  | Docker, Docker Compose      |
+| 🧬 ORM               | JPA / Hibernate             |
+| 📚 API Documentation | Swagger UI (SpringDoc)      |
+---
+
+## Running in App
+
+```sh
+make up
+```
+
+## Clean up App
+
+
+```sh
+make down
+```

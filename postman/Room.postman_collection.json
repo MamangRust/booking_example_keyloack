@@ -1,0 +1,204 @@
+{
+	"info": {
+		"_postman_id": "f063c6ef-de6b-4812-928d-c54cd2297034",
+		"name": "Room",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12455638"
+	},
+	"item": [
+		{
+			"name": "Find All",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/room",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"room"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:8080/api/room \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Room",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/room/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"room",
+						"2"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/api/room/1?id=1\" \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		},
+		{
+			"name": "Create Room",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": [
+								"/path/to/your/image.jpg",
+								"/home/hooveredan/Downloads/Telegram Desktop/dark.png"
+							]
+						},
+						{
+							"key": "roomName",
+							"value": "Deluxe Room",
+							"type": "text"
+						},
+						{
+							"key": "roomCapacity",
+							"value": "4",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/room/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"room",
+						"create"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/room/create \\\n  -H \"Authorization: Bearer <your_access_token>\" \\\n  -F \"file=@/path/to/your/image.jpg\" \\\n  -F \"roomName=Deluxe Room\" \\\n  -F \"roomCapacity=4\""
+			},
+			"response": []
+		},
+		{
+			"name": "Update Room",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": [
+								"/path/to/your/image.jpg",
+								"/home/hooveredan/Downloads/Telegram Desktop/light.png"
+							]
+						},
+						{
+							"key": "roomName",
+							"value": "Updated Room",
+							"type": "text"
+						},
+						{
+							"key": "roomCapacity",
+							"value": "5",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/room/update/1?id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"room",
+						"update",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X PUT http://localhost:8080/api/room/update/1?id=1 \\\n  -H \"Authorization: Bearer <your_access_token>\" \\\n  -F \"file=@/path/to/your/image.jpg\" \\\n  -F \"roomName=Updated Room\" \\\n  -F \"roomCapacity=5\""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Room",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/room/delete/1?id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"room",
+						"delete",
+						"1"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/api/room/delete/1?id=1\" \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		}
+	]
+}

@@ -13,6 +13,14 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
     @NotBlank
     @Size(min = 3, max = 20)
+    private String firstName;
+
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String lastName;
+
+    @NotBlank
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank
@@ -25,5 +33,4 @@ public class RegisterRequest {
     private String password;
 
     private Set<String> role;
-
 }

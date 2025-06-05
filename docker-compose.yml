@@ -25,20 +25,20 @@ services:
         condition: service_healthy
 
   appdb:
-      image: "postgres:15"
-      ports:
-        - ${APP_DB_PORT}:${APP_DB_PORT}
-      environment:
-        - POSTGRES_USER=${APP_DB_USERNAME:-appuser}
-        - POSTGRES_PASSWORD=${APP_DB_PASSWORD:-apppass}
-        - POSTGRES_DB=${APP_DB:-appdb}
-      volumes:
-        - app_data:/var/lib/postgresql/data
-      healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U ${APP_DB_USERNAME:-appuser}"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
+    image: "postgres:15"
+    ports:
+      - ${APP_DB_PORT}:${APP_DB_PORT}
+    environment:
+      - POSTGRES_USER=${APP_DB_USERNAME:-appuser}
+      - POSTGRES_PASSWORD=${APP_DB_PASSWORD:-apppass}
+      - POSTGRES_DB=${APP_DB:-appdb}
+    volumes:
+      - app_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${APP_DB_USERNAME:-appuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   keycloak:
@@ -63,6 +63,7 @@ services:
       timeout: 15s
       retries: 5
       start_period: 30s
+  
 
   keycloakdb:
     image: "postgres:15"

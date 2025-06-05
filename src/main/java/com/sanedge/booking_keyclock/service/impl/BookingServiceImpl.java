@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.sanedge.booking_keyclock.config.KeycloakConfig;
 import com.sanedge.booking_keyclock.domain.request.booking.CreateBookingRequest;
 import com.sanedge.booking_keyclock.domain.request.booking.UpdateBookingRequest;
 import com.sanedge.booking_keyclock.domain.response.MessageResponse;
@@ -32,21 +34,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class BookingServiceImpl implements BookingService {
-    @Value("${keycloak.realm}")
-    private String keycloakRealm;
-
-    private Keycloak keycloakAdminInstance;
-
+    private final KeycloakConfig keycloakConfig;
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
     private final BookingMailService bookingMailService;
 
     @Autowired
     public BookingServiceImpl(RoomRepository roomRepository,
-            BookingRepository bookingRepository, BookingMailService bookingMailService) {
+            BookingRepository bookingRepository, BookingMailService bookingMailService, KeycloakConfig keycloakConfig) {
         this.roomRepository = roomRepository;
         this.bookingRepository = bookingRepository;
         this.bookingMailService = bookingMailService;
+        this.keycloakConfig = keycloakConfig;
     }
 
     @Override
@@ -100,9 +99,9 @@ public class BookingServiceImpl implements BookingService {
             Optional<User> userOptional = this.getUserById(userId);
 
             if (userOptional.isEmpty()) {
-                log.warn("User not found  User ID: {}",  userId);
+                log.warn("User not found  User ID: {}", userId);
             }
-    
+
             User user = userOptional.get();
             String userName = user.getUsername();
 
@@ -129,6 +128,9 @@ public class BookingServiceImpl implements BookingService {
             Booking orderBooking = new Booking();
 
             orderBooking.setOrderId("ORDER" + System.currentTimeMillis());
+            orderBooking.setUserId(userOptional.get().getId());
+            orderBooking.setUserEmail(userOptional.get().getEmail());    
+            orderBooking.setUsername(userOptional.get().getUsername());
             orderBooking.setRoom(findRoom);
             orderBooking.setTotalPerson(request.getTotalPerson());
             orderBooking.setBookingTime(request.getBookingTime());
@@ -160,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
             Optional<User> userOptional = this.getUserById(userId);
 
             if (userOptional.isEmpty()) {
-                log.warn("User not found  User ID: {}",  userId);
+                log.warn("User not found  User ID: {}", userId);
             }
 
             log.info("Updating booking with id: {}", id);
@@ -186,6 +188,9 @@ public class BookingServiceImpl implements BookingService {
             }
 
             findBooking.setRoom(findRoom);
+            findBooking.setUserId(userOptional.get().getId());
+            findBooking.setUserEmail(userOptional.get().getEmail());    
+            findBooking.setUsername(userOptional.get().getUsername());
             findBooking.setTotalPerson(request.getTotalPerson());
             findBooking.setBookingTime(request.getBookingTime());
             findBooking.setNoted(request.getNoted());
@@ -220,10 +225,10 @@ public class BookingServiceImpl implements BookingService {
                     log.warn("User not found for booking {} (User ID: {})", booking.getId(), userId);
                     return;
                 }
-        
+
                 User user = userOptional.get();
                 String userEmail = user.getEmail();
-        
+
                 if (userEmail == null || userEmail.isBlank()) {
                     log.warn("No email found for user {} (Booking: {})", user.getUsername(), booking.getOrderId());
                     return;
@@ -260,7 +265,8 @@ public class BookingServiceImpl implements BookingService {
 
     public Optional<User> getUserById(String userId) {
         try {
-            UsersResource usersResource = keycloakAdminInstance.realm(this.keycloakRealm).users();
+            RealmResource realmResource = keycloakConfig.getRealmResource();
+            UsersResource usersResource = realmResource.users();
             UserResource userResource = usersResource.get(userId);
 
             try {

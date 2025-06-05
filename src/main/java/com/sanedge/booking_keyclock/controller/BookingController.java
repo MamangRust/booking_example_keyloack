@@ -2,11 +2,13 @@ package com.sanedge.booking_keyclock.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sanedge.booking_keyclock.domain.request.booking.CreateBookingRequest;
@@ -35,7 +37,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MessageResponse> findById(@RequestParam("id") Long id) {
+    public ResponseEntity<MessageResponse> findById(@PathVariable("id") Long id) {
         MessageResponse room = bookingService.findById(id);
 
         return ResponseEntity.ok(room);
@@ -49,8 +51,8 @@ public class BookingController {
         return ResponseEntity.ok(room);
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity<MessageResponse> updateBooking(@RequestParam("id") Long id,
+    @PutMapping("/update/{id}")
+    public ResponseEntity<MessageResponse> updateBooking(@PathVariable("id") Long id,
             @Valid @RequestBody UpdateBookingRequest request) {
 
         MessageResponse room = bookingService.updateBooking(id, authService.getCurrentUser().getId(), request);
@@ -58,8 +60,8 @@ public class BookingController {
         return ResponseEntity.ok(room);
     }
 
-    @GetMapping("/delete/{id}")
-    public ResponseEntity<MessageResponse> deleteBooking(@RequestParam("id") Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<MessageResponse> deleteBooking(@PathVariable("id") Long id) {
 
         MessageResponse room = bookingService.deleteById(id);
 

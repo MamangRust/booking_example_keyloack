@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "468e0bed-038c-4c2a-b875-3b8eec8ec93f",
+		"name": "Booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12455638"
+	},
+	"item": [
+		{
+			"name": "Find All Booking",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bookings"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:8080/api/bookings \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		},
+		{
+			"name": "Create Booking",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roomId\": 2,\n    \"totalPerson\": 3,\n    \"bookingTime\": \"2025-06-10T14:00:00\",\n    \"noted\": \"Request extra pillows\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bookings/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bookings",
+						"create"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/bookings/create \\\n  -H \"Authorization: Bearer <your_access_token>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"roomId\": 2,\n    \"totalPerson\": 3,\n    \"bookingTime\": \"2025-06-10T14:00:00\",\n    \"noted\": \"Request extra pillows\"\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roomId\": 2,\n    \"totalPerson\": 2,\n    \"bookingTime\": \"2025-06-10T15:00:00\",\n    \"noted\": \"Change time to 3PM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bookings/update/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bookings",
+						"update",
+						"2"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST \"http://localhost:8080/api/bookings/update/1?id=1\" \\\n  -H \"Authorization: Bearer <your_access_token>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"roomId\": 2,\n    \"totalPerson\": 4,\n    \"bookingTime\": \"2025-06-10T15:00:00\",\n    \"noted\": \"Change time to 3PM\"\n  }'"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Booking",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/bookings/delete/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bookings",
+						"delete",
+						"1"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/api/bookings/delete/1?id=1\" \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Booking",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/bookings/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bookings",
+						"1"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/api/bookings/1?id=1\" \\\n  -H \"Authorization: Bearer <your_access_token>\""
+			},
+			"response": []
+		}
+	]
+}

@@ -2,7 +2,9 @@ package com.sanedge.booking_keyclock.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +32,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MessageResponse> getRoomById(@RequestParam("id") Long id) {
+    public ResponseEntity<MessageResponse> getRoomById(@PathVariable("id") Long id) {
         MessageResponse room = roomService.findById(id);
 
         return ResponseEntity.ok(room);
@@ -67,7 +69,7 @@ public class RoomController {
         return ResponseEntity.ok(room);
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<MessageResponse> deleteRoom(@RequestParam("id") Long id) {
 
         MessageResponse room = roomService.deleteRoom(id);

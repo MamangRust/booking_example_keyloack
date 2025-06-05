@@ -19,6 +19,9 @@ import com.sanedge.booking_keyclock.models.Room;
 import com.sanedge.booking_keyclock.repository.RoomRepository;
 import com.sanedge.booking_keyclock.service.RoomService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
@@ -35,6 +38,8 @@ public class RoomServiceImpl implements RoomService {
 
     public MessageResponse findAll() {
         try {
+            log.info("Fetching all rooms");
+
             List<Room> roomList = roomRepository.findAll();
             return MessageResponse.builder()
                     .message("Success")
@@ -42,7 +47,7 @@ public class RoomServiceImpl implements RoomService {
                     .statusCode(HttpStatus.OK.value())
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while fetching rooms", e);
             return MessageResponse.builder()
                     .message("Error occurred while fetching rooms")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -52,21 +57,25 @@ public class RoomServiceImpl implements RoomService {
 
     public MessageResponse findById(Long id) {
         try {
+            log.info("Fetching room by ID: {}", id);
+
             Optional<Room> room = roomRepository.findById(id);
             if (room.isPresent()) {
+                log.info("Room found: {}", room.get());
                 return MessageResponse.builder()
                         .message("Success")
                         .data(RoomMapper.toRoomResponse(room.get()))
                         .statusCode(HttpStatus.OK.value())
                         .build();
             } else {
+                log.info("Room not found");
                 return MessageResponse.builder()
                         .message("Room not found")
                         .statusCode(HttpStatus.NOT_FOUND.value())
                         .build();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while fetching room by ID", e);
             return MessageResponse.builder()
                     .message("Error occurred while fetching room by ID")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -76,6 +85,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public MessageResponse createRoom(CreateRoomRequest createRoomRequest) {
+        log.info("Creating room: {}", createRoomRequest);
+
         MultipartFile myFile = createRoomRequest.getFile();
 
         Room room = new Room();
@@ -83,9 +94,8 @@ public class RoomServiceImpl implements RoomService {
         room.setRoomCapacity(createRoomRequest.getRoomCapacity());
         room.setRoomStatus(RoomStatus.READY);
 
-        Room findName = roomRepository.findByRoomName(createRoomRequest.getRoomName())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
-        if (findName != null) {
+        Optional<Room> findName = roomRepository.findByRoomName(createRoomRequest.getRoomName());
+        if (findName.isPresent()) {
             return MessageResponse.builder()
                     .message("Room name already exists")
                     .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -107,21 +117,22 @@ public class RoomServiceImpl implements RoomService {
 
                         RoomResponse mapper = RoomMapper.toRoomResponse(room);
 
+                        log.info("Room created successfully: {}", mapper);
+
                         return MessageResponse.builder()
                                 .message("Room created successfully")
                                 .data(mapper)
                                 .statusCode(HttpStatus.OK.value())
                                 .build();
                     } else {
-
-                        System.err.println("Failed to create the file");
+                        log.error("Failed to create the file");
                         return MessageResponse.builder()
                                 .message("Failed to create the file")
                                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .build();
                     }
                 } else {
-                    System.err.println("Failed to create the folder");
+                    log.error("Failed to create the folder");
                     return MessageResponse.builder()
                             .message("Failed to create the folder")
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -129,12 +140,14 @@ public class RoomServiceImpl implements RoomService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unexpected error occurred", e);
             return MessageResponse.builder()
                     .message("Unexpected error occurred")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .build();
         }
+
+        log.error("No file provided");
 
         return MessageResponse.builder()
                 .message("No file provided")
@@ -143,9 +156,10 @@ public class RoomServiceImpl implements RoomService {
     }
 
     public MessageResponse updateRoom(Long id, UpdateRoomRequest request) {
-        Room findName = roomRepository.findByRoomName(request.getRoomName())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
-        if (findName != null) {
+        log.info("Updating room with id: {}", id);
+
+        Optional<Room> findName = roomRepository.findByRoomName(request.getRoomName());
+        if (findName.isPresent()) {
             return MessageResponse.builder()
                     .message("Room name already exists")
                     .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -160,6 +174,7 @@ public class RoomServiceImpl implements RoomService {
         room.setRoomCapacity(request.getRoomCapacity());
 
         try {
+            log.info("Updating room with id: {}", id);
             if (myFile != null) {
                 folderService.deleteFolder(room.getRoomName());
                 fileService.deleteFileImage(room.getPhoto());
@@ -167,6 +182,7 @@ public class RoomServiceImpl implements RoomService {
                 String folderPath = folderService.createFolder(request.getRoomName());
 
                 if (folderPath != null) {
+                    log.info("Folder created successfully: {}", folderPath);
 
                     String filePath = folderPath + File.separator + myFile.getOriginalFilename();
                     String createdFilePath = fileService.createFileImage(myFile, filePath);
@@ -177,17 +193,19 @@ public class RoomServiceImpl implements RoomService {
 
                         RoomResponse mapper = RoomMapper.toRoomResponse(room);
 
+                        log.info("Room updated successfully: {}", mapper);
+
                         return MessageResponse.builder().message("Room updated successfully").data(mapper)
                                 .statusCode(HttpStatus.OK.value()).build();
                     } else {
-                        System.err.println("Failed to create the file");
+                        log.error("Failed to create the file");
                         return MessageResponse.builder()
                                 .message("Failed to create the file")
                                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .build();
                     }
                 } else {
-                    System.err.println("Failed to create the folder");
+                    log.error("Failed to create the folder");
                     return MessageResponse.builder()
                             .message("Failed to create the folder")
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -197,12 +215,15 @@ public class RoomServiceImpl implements RoomService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unexpected error occurred", e);
+
             return MessageResponse.builder()
                     .message("Unexpected error occurred")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .build();
         }
+
+        log.error("No file provided");
         return MessageResponse.builder()
                 .message("No file provided")
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -211,18 +232,25 @@ public class RoomServiceImpl implements RoomService {
     }
 
     public MessageResponse deleteRoom(Long id) {
+        log.info("Deleting room with id: {}", id);
+
         Room room = this.roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
 
         try {
+            log.info("Deleting room with id: {}", id);
 
             roomRepository.delete(room);
+
+            folderService.deleteFolder(room.getRoomName());
+            fileService.deleteFileImage(room.getPhoto());
 
             return MessageResponse.builder()
                     .message("Success")
                     .statusCode(HttpStatus.OK.value())
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while deleting room", e);
+
             return MessageResponse.builder()
                     .message("Error occurred while deleting room")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())

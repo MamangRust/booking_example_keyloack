@@ -1,5 +1,6 @@
 package com.sanedge.booking_keyclock.controller;
 
+import org.apache.http.client.HttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<MessageResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<MessageResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) throws HttpResponseException {
         MessageResponse authResponse = this.authService.login(loginRequest);
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
@@ -42,7 +43,6 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me() {
-
         User user = authService.getCurrentUser();
 
         return ResponseEntity.ok(user);
@@ -53,7 +53,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyEmail(token));
     }
 
- 
 
     @PostMapping("/forgot")
     public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotRequest request) {
@@ -64,5 +63,4 @@ public class AuthController {
     public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         return ResponseEntity.ok(authService.resetPassword(request));
     }
-
 }

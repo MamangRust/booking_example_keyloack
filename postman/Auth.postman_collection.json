@@ -1,0 +1,245 @@
+{
+	"info": {
+		"_postman_id": "b656cb29-4111-4512-ad1e-05bac67710e0",
+		"name": "Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12455638"
+	},
+	"item": [
+		{
+			"name": "Register In Role Admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Admin\",\n    \"username\": \"rustadmin\",\n    \"email\": \"rustadmin@example.com\",\n    \"password\": \"strongpassword\",\n    \"role\": [\"admin\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Admin\",\n    \"username\": \"janeadmin\",\n    \"email\": \"janeadmin@example.com\",\n    \"password\": \"strongpassword\",\n    \"role\": [\"admin\"]\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Register in Role User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"securepassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"securepassword\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"realworld_user\",\n    \"password\": \"realword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/login \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"realworld_user\",\n    \"password\": \"realword\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Me",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{secret_key}}"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/auth/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"me"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:8080/api/auth/me \\\n  -H \"Authorization: Bearer \""
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/auth/verify?token=f8Gp1mFcf28AdQUDIxgKYjkjiqthEQsASFthwchRoL3P4eount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"verify"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "f8Gp1mFcf28AdQUDIxgKYjkjiqthEQsASFthwchRoL3P4eount"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X GET \"http://localhost:8080/api/auth/verify?token=\""
+			},
+			"response": []
+		},
+		{
+			"name": "Forgot Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"janeadmin@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/forgot",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"forgot"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/forgot \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"email\": \"johndoe@example.com\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"1d5e1044-8203-41ef-8bc8-ab290c3d49af\",\n    \"password\": \"newsecurepassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/reset",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"reset"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/reset \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"token\": \"<reset_token>\",\n    \"password\": \"newsecurepassword\"\n}'"
+			},
+			"response": []
+		}
+	]
+}

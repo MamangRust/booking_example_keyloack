@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21 as build-env
+FROM eclipse-temurin:21 AS build-env
 
 ADD . /app
 
